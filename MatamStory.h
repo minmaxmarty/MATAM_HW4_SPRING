@@ -2,13 +2,20 @@
 #pragma once
 
 #include <iostream>
+#include <algorithm>
 
+#include "Factory.h"
 #include "Players/Player.h"
 #include "Events/Event.h"
 
-
 class MatamStory{
 private:
+    Factory& m_factory;
+    std::vector<std::unique_ptr<Event>> m_events;
+    int m_numberOfEvents;
+    int m_curEvent;
+    std::vector<std::unique_ptr<Player>> m_players;
+    int m_numberOfPlayers;
     unsigned int m_turnIndex;
 
     /**

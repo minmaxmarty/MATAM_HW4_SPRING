@@ -3,22 +3,30 @@
 
 #include "Utilities.h"
 
-MatamStory::MatamStory(std::istream& eventsStream, std::istream& playersStream) {
+MatamStory::MatamStory(std::istream& eventsStream, std::istream& playersStream) : m_factory(Factory::factoryInstance()), m_curEvent(0) {
 
     /*===== TODO: Open and read events file =====*/
-
+    m_events = m_factory.createEvents(eventsStream);
+    m_numberOfEvents = m_events.size();
     /*==========================================*/
 
-
     /*===== TODO: Open and Read players file =====*/
-
+    m_players = m_factory.createPlayers(playersStream);
+    m_numberOfPlayers = m_players.size();
     /*============================================*/
-
 
     this->m_turnIndex = 1;
 }
 
 void MatamStory::playTurn(Player& player) {
+    unsigned int eventIndex = (m_turnIndex - 1) % m_numberOfEvents;
+    std::unique_ptr<Event>& curEvent = m_events.at(eventIndex);
+
+    printTurnDetails(m_turnIndex, player, *curEvent);
+
+    const string& outcome = curEvent->applyEvent(player);
+
+    printTurnOutcome(outcome);
 
     /**
      * Steps to implement (there may be more, depending on your design):
@@ -36,7 +44,11 @@ void MatamStory::playRound() {
     printRoundStart();
 
     /*===== TODO: Play a turn for each player =====*/
-
+    for (auto player : m_players) {
+        if (!player->isPlayerFainted()) {
+            playTurn(*player);
+        }
+    }
     /*=============================================*/
 
     printRoundEnd();
@@ -44,6 +56,12 @@ void MatamStory::playRound() {
     printLeaderBoardMessage();
 
     /*===== TODO: Print leaderboard entry for each player using "printLeaderBoardEntry" =====*/
+    std::sort(m_players.begin(), m_players.end());
+    int entryNumber = 1;
+    for (auto player : m_players) {
+        printLeaderBoardEntry(entryNumber, *player);
+        entryNumber++;
+    }
 
     /*=======================================================================================*/
 
@@ -52,7 +70,19 @@ void MatamStory::playRound() {
 
 bool MatamStory::isGameOver() const {
     /*===== TODO: Implement the game over condition =====*/
-    return false; // Replace this line
+    int faintCounter = 0;
+    for (const auto player : m_players) {
+        if (player->getLevel() == Player::MAX_LEVEL) {
+            return true;
+        }
+        if (player->isPlayerFainted()) {
+            faintCounter++;
+        }
+    }
+    if (faintCounter == m_numberOfPlayers) {
+        return true;
+    }
+    return false;
     /*===================================================*/
 }
 
