@@ -1,0 +1,162 @@
+* commit 40cc2e4e3beb230041c514ea343c52e0d3ef5229
+| Author: minmaxmarty <aregmkhitaryan@gmail.com>
+| Date:   Fri Jul 11 22:23:35 2025 +0300
+| 
+|     add dry of last semester
+| 
+|  dry.docx | Bin 0 -> 99939 bytes
+|  dry.pdf  | Bin 0 -> 195442 bytes
+|  2 files changed, 0 insertions(+), 0 deletions(-)
+| 
+* commit 72cbb8d54a6348ca751720d78e1fa763273be6a9
+| Author: minmaxmarty <aregmkhitaryan@gmail.com>
+| Date:   Fri Jul 11 22:10:29 2025 +0300
+| 
+|     pass tests
+| 
+|  MatamStoryTest    | Bin 1995552 -> 2794480 bytes
+|  test_results.html | 644 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+|  2 files changed, 644 insertions(+)
+| 
+* commit e566b3dc424e3695fce828b57dadf54ca26e3e8b
+| Author: minmaxmarty <aregmkhitaryan@gmail.com>
+| Date:   Fri Jul 11 21:09:11 2025 +0300
+| 
+|     upload homework from last semseter
+| 
+|  Events/AbstractFactory.h     |  39 +++
+|  Events/Event.cpp             | 145 +++++++---
+|  Events/Event.h               |  80 +++---
+|  Events/EventFactory.cpp      |  50 ++++
+|  Events/EventFactory.h        |  16 ++
+|  Events/Monster.cpp           | 143 +++++++---
+|  Events/Monster.h             |  97 +++----
+|  Events/MonsterFactory.cpp    |  21 ++
+|  Events/MonsterFactory.h      |  12 +
+|  Events/StreamAdapter.cpp     | 135 +++++++++
+|  Events/StreamAdapter.h       |  27 ++
+|  Factory.cpp                  |  99 -------
+|  Factory.h                    |  72 -----
+|  MatamStory                   | Bin 486200 -> 0 bytes
+|  MatamStory.cpp               | 157 ++++++-----
+|  MatamStory.h                 |  25 +-
+|  MyExceptions.h               |  29 --
+|  Players/Character.cpp        |  72 +++--
+|  Players/Character.h          |  51 ++--
+|  Players/CharacterFactory.cpp |  19 ++
+|  Players/CharacterFactory.h   |   9 +
+|  Players/Job.cpp              | 126 ++++-----
+|  Players/Job.h                | 113 ++++----
+|  Players/JobFactory.cpp       |  22 ++
+|  Players/JobFactory.h         |   9 +
+|  Players/Player.cpp           | 215 ++++++++++----
+|  Players/Player.h             | 146 +++++++---
+|  Players/PlayerFactory.cpp    |  24 ++
+|  Players/PlayerFactory.h      |  26 ++
+|  run_tests.sh                 |  21 --
+|  test1.out                    |  96 -------
+|  test2.out                    |   1 -
+|  test3.out                    |   1 -
+|  test_results.html            | 626 -----------------------------------------
+|  34 files changed, 1236 insertions(+), 1488 deletions(-)
+| 
+* commit 359cca30b37b6e952f69b4807df9422092438eff
+| Author: minmaxmarty <aregmkhitaryan@gmail.com>
+| Date:   Fri Jul 11 21:05:39 2025 +0300
+| 
+|     finish without debug
+| 
+|  .gitmodules           |   6 +
+|  Events/Event.cpp      |  30 +--
+|  Events/Event.h        |  10 +-
+|  Events/Monster.cpp    |  30 ++-
+|  Events/Monster.h      |   9 +-
+|  Factory.cpp           |  14 +-
+|  Factory.h             |  10 +-
+|  MatamGenericTester    |   1 +
+|  MatamStory            | Bin 0 -> 486200 bytes
+|  MatamStory.cpp        |  30 ++-
+|  MatamStory.h          |   5 +-
+|  MatamStoryTest        | Bin 0 -> 1995552 bytes
+|  MyExceptions.h        |   4 +-
+|  Players/Character.cpp |  11 +-
+|  Players/Job.cpp       |   3 +-
+|  Players/Job.h         |   5 +-
+|  Players/Player.cpp    |  26 +-
+|  Players/Player.h      |   4 +-
+|  TechnionMatam         |   1 +
+|  main.cpp              |   1 +
+|  run_tests.sh          |  21 ++
+|  test1.out             |  96 ++++++++
+|  test2.out             |   1 +
+|  test3.out             |   1 +
+|  test_results.html     | 626 ++++++++++++++++++++++++++++++++++++++++++++++++
+|  25 files changed, 863 insertions(+), 82 deletions(-)
+| 
+* commit 15dc72c8f0caf24643de8e139cf88363ee74d19c
+| Author: minmaxmarty <aregmkhitaryan@gmail.com>
+| Date:   Tue Jul 1 12:46:28 2025 +0300
+| 
+|     finish without debug
+| 
+|  .gitignore            |  2 ++
+|  CMakeLists.txt        | 29 +++++++++++++++
+|  Events/Event.cpp      | 71 ++++++++++++++++++++++++++++++++++++
+|  Events/Event.h        | 53 ++++++++++++++++++++++++++-
+|  Events/Monster.cpp    | 42 ++++++++++++++++++++++
+|  Events/Monster.h      | 79 ++++++++++++++++++++++++++++++++++++++++
+|  Factory.cpp           | 95 +++++++++++++++++++++++++++++++++++++++++++++++++
+|  Factory.h             | 72 +++++++++++++++++++++++++++++++++++++
+|  MatamStory.cpp        | 44 +++++++++++++++++++----
+|  MatamStory.h          |  9 ++++-
+|  MyExceptions.h        | 29 +++++++++++++++
+|  Players/Character.cpp | 56 +++++++++++++++++++++++++++++
+|  Players/Character.h   | 48 +++++++++++++++++++++++++
+|  Players/Job.cpp       | 92 +++++++++++++++++++++++++++++++++++++++++++++++
+|  Players/Job.h         | 83 ++++++++++++++++++++++++++++++++++++++++++
+|  Players/Player.cpp    | 85 +++++++++++++++++++++++++++++++++++++++++++
+|  Players/Player.h      | 41 ++++++++++++++++++++-
+|  17 files changed, 920 insertions(+), 10 deletions(-)
+| 
+* commit 51796562dfb799a0ac456f5d2f922b9571403bd9
+| Author: Yinon Goldshtein <yinongold@gmail.com>
+| Date:   Tue Jun 24 09:06:41 2025 +0300
+| 
+|     updated course number in README
+| 
+|  README.md | 2 +-
+|  1 file changed, 1 insertion(+), 1 deletion(-)
+| 
+* commit 11db499619ae45b95224312022c5e0459653edcd
+| Author: Egbaria Mohammad-Baraa <102754795+EgbariaMohammad@users.noreply.github.com>
+| Date:   Wed Jan 8 19:48:30 2025 +0200
+| 
+|     Update README.md
+| 
+|  README.md | 4 ++--
+|  1 file changed, 2 insertions(+), 2 deletions(-)
+| 
+* commit 89b5f6299cabd5cfeb30a0873786055da6280436
+  Author: Yinon Goldshtein <yinongold@gmail.com>
+  Date:   Tue Jan 7 01:02:53 2025 +0200
+  
+      initial commit
+  
+   Events/Event.h       |  14 +++++
+   MatamStory.cpp       |  74 +++++++++++++++++++++++++
+   MatamStory.h         |  55 +++++++++++++++++++
+   Players/Player.h     |  51 +++++++++++++++++
+   README.md            |   7 +++
+   Utilities.cpp        | 117 +++++++++++++++++++++++++++++++++++++++
+   Utilities.h          | 146 +++++++++++++++++++++++++++++++++++++++++++++++++
+   main.cpp             |  40 ++++++++++++++
+   tests/test1.events   |   5 ++
+   tests/test1.expected |  96 ++++++++++++++++++++++++++++++++
+   tests/test1.players  |   3 +
+   tests/test2.events   |   4 ++
+   tests/test2.expected |   1 +
+   tests/test2.players  |   3 +
+   tests/test3.events   |   5 ++
+   tests/test3.expected |   1 +
+   tests/test3.players  |   2 +
+   17 files changed, 624 insertions(+)
