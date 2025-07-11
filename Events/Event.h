@@ -1,63 +1,77 @@
-
 #pragma once
 
-#include <vector>
+#include "Player.h"
+#include "Monster.h"
 
-#include "../Players/Player.h"
+#include <string>
 
-class Monster;
+using std::unique_ptr;
 
-class Event {
-protected:
-    string m_description;
-    static void faintPlayer(Player& player);
-
+class Event
+{
 public:
     /**
      * Gets the description of the event
      *
      * @return - the description of the event
-    */
-    Event() = default;
-    explicit Event(const string& description) : m_description(description) {}
+     */
+    virtual std::string getDescription() const = 0;
+
+    // apply event method
+    virtual std::string apply(Player &player) const = 0;
+
     virtual ~Event() = default;
-    virtual string getDescription() const;
-    virtual string applyEvent(Player& player) = 0;
-
 };
 
-class SpecialEvent : public Event {
+class Encounter : public Event
+{
+private:
+    unique_ptr<Monster> monster;
 
 public:
-    explicit SpecialEvent(const string& description) : Event(description) {}
+    // ctor
+    Encounter();
+
+    // ctor with param
+    explicit Encounter(unique_ptr<Monster> monster);
+
+    // apply override
+    std::string apply(Player &player) const override;
+
+    //get description
+    std::string getDescription() const override;
+
+    void setMonster(unique_ptr<Monster> newMonster);
+
+    void afterCombat() const;
 };
 
-class SolarEclipse : public SpecialEvent {
+class SpecialEvent : public Event
+{
+protected:
+    std::string name;
 
 public:
-    static const string SOLAR_ECLIPSE;
+    ~SpecialEvent() override = default;
 
-    SolarEclipse() : SpecialEvent(SOLAR_ECLIPSE) {}
-    string applyEvent(Player& player) override;
-
+    //get description
+    std::string getDescription() const override;
 };
 
-class PotionsMerchant : public SpecialEvent {
-
+class PotionMerchant final : public SpecialEvent
+{
 public:
-    static const string POTIONS_MERCHANT;
+    PotionMerchant();
 
-    PotionsMerchant() : SpecialEvent(POTIONS_MERCHANT) {}
-    string applyEvent(Player& player) override;
-
+    // apply override
+    std::string apply(Player &player) const override;
 };
 
-class Encounter : public Event {
-    std::unique_ptr<Monster> m_monster;
-
+class SolarEclipse final : public SpecialEvent
+{
 public:
-    explicit Encounter(std::unique_ptr<Monster> monster);
-    string applyEvent(Player& player) override;
+    SolarEclipse();
+
+    // apply override
+    std::string apply(Player &player) const override;
 };
-
-

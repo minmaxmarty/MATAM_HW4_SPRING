@@ -1,57 +1,122 @@
-//
-// Created by areg1 on 7/1/2025.
-//
-
 #include "Event.h"
-
-#include "Character.h"
-#include "Job.h"
-#include "Monster.h"
 #include "Utilities.h"
+#include "Player.h"
 
-const string SolarEclipse::SOLAR_ECLIPSE = "SolarEclipse";
-const string PotionsMerchant::POTIONS_MERCHANT = "PotionsMerchant";
+#define POTION_PRICE 5
+using std::string;
+// constructors
+Encounter::Encounter() : monster(nullptr) {}
 
-void Event::faintPlayer(Player &player) {
-    player.m_isFainted = true;
-}
+Encounter::Encounter(unique_ptr<Monster> monster)
+{
+    this->monster = std::move(monster);
+};
 
-string Event::getDescription() const {
-    return m_description;
-}
+PotionMerchant::PotionMerchant()
+{
+    this->name = "PotionsMerchant";
+};
 
-string Encounter::applyEvent(Player &player) {
-    const unsigned int playerCombatPower = player.getCombatPower();
-    const unsigned int monsterCombatPower = m_monster->getCombatPower();
-    bool didWin = false;
-    if (playerCombatPower > monsterCombatPower) {
-        player.getJob().encounterWinImplications(player, *m_monster);
-        didWin = true;
+SolarEclipse::SolarEclipse()
+{
+    this->name = "SolarEclipse";
+};
+
+//event logics
+
+// combat logic
+string Encounter::apply(Player &player) const
+{
+    int monsterCombatPower = this->monster->getCombatPower();
+    string message;
+    // player wins encounter
+    if (player.getCombatPower() > monsterCombatPower)
+    {
+        // if melee take damage
+        if (!player.isRanged())
+        {
+            player.takeDamage(10);
+        }
+        // take loot
+        int loot = monster->getLoot();
+        player.addCoins(loot);
+
+        // player level up
+        player.addLevels(1);
+
+        //call after combat of monsters
+
+        // get won message
+        message = getEncounterWonMessage(player, loot);
     }
-    else {
-        player.getJob().encounterLoseImplications(player, *m_monster);
+    // combat loss
+    else
+    {
+        // lose hp
+        int taken = player.takeDamage(monster->getDamage());
+
+        //get loss message
+        message = getEncounterLostMessage(player, taken);
     }
-    m_monster->applyPostFightImplications();
-    m_description = m_monster->getName() + m_monster->createDescriptionString();
-    if (player.getHealthPoints() == 0) {
-        faintPlayer(player);
+    this->afterCombat();
+    return message;
+};
+
+// Potion merchant implementation
+string PotionMerchant::apply(Player &player) const
+{
+    int desiredPotions = player.getMaxDesiredPotions(POTION_PRICE);
+    int bought = player.buyPotions(desiredPotions, POTION_PRICE);
+    //use potions
+    player.usePotions(bought);
+    return getPotionsPurchaseMessage(player, bought);
+};
+
+// Solar eclipse implementation
+string SolarEclipse::apply(Player &player) const
+{
+    int change = 0;
+    if (player.isMagical())
+    {
+        // buff
+        change = 1;
     }
-    if (didWin) {
-        return getEncounterWonMessage(player, m_monster->getLoot());
+    else
+    {
+        // debuff
+        change = -1;
     }
-    return getEncounterLostMessage(player, m_monster->getDamage());
+    const int effect = player.addForce(change);
+    return getSolarEclipseMessage(player, effect);
 }
 
-string SolarEclipse::applyEvent(Player &player) {
-    const int forceGain = player.getJob().solarEclipseImplications(player);
-    return getSolarEclipseMessage(player, forceGain);
+void Encounter::setMonster(unique_ptr<Monster> newMonster) {
+    this->monster = std::move(newMonster);
 }
 
-string PotionsMerchant::applyEvent(Player &player) {
-    const int amount = player.getCharacter().howManyPotions(player);
-    return getPotionsPurchaseMessage(player, amount);
+//get description special event implementation
+string SpecialEvent::getDescription() const {
+    return this->name;
 }
 
-Encounter::Encounter(std::unique_ptr<Monster> monster) : m_monster(std::move(monster)) {
-    m_description = m_monster->getDescription();
+//get description encounter implementation
+string Encounter::getDescription() const {
+    if (this->monster) {
+        string desc;
+        desc += this->monster->getName();
+        desc += " (power ";
+        desc += std::to_string(this->monster->getCombatPower());
+        desc += ", loot ";
+        desc += std::to_string(this->monster->getLoot());
+        desc += ", damage ";
+        desc += std::to_string(this->monster->getDamage());
+        desc += ")";
+        return desc;
+    }
+    return "";
 }
+
+void Encounter::afterCombat() const {
+    this->monster->afterCombat();
+}
+

@@ -1,93 +1,85 @@
-//
-// Created by areg1 on 6/29/2025.
-//
-
-#include "Player.h"
 #include "Job.h"
+#include "Player.h"
 
-#include "Monster.h"
+#define DEFAULT_HP 100
+#define WARRIOR_HP 150
+#define DEFAULT_COINS 10
+#define ARCHER_COINS 20
 
-void Job::encounterWinImplications(Player &player, const Monster &monster) const {
-    levelUp(player);
-    gainCoins(player, monster.getLoot());
+// Job implementations
+// getters
+
+bool Job::isMagical() const
+{
+    return this->magical;
 }
 
-void Job::encounterLoseImplications(Player &player, const Monster &monster) const {
-    loseHealth(player, monster.getDamage());
+bool Job::isRanged() const
+{
+    return this->ranged;
 }
 
-void Job::gainHealth(Player &player, const int amount) {
-    const int curHealth = player.m_healthPoints;
-    if (curHealth + amount > player.getMaxHealthPoints()) {
-        player.m_healthPoints = player.getMaxHealthPoints();
-    }
-    else {
-        player.m_healthPoints += amount;
-    }
+// default get combat power implementation
+int Job::getCombatPower(const Player &player) const
+{
+    return player.getForce() + player.getLevel();
 }
 
-void Job::loseHealth(Player &player, const int amount) {
-    const int curHealth = player.m_healthPoints;
-    if (curHealth - amount < 0) {
-        player.m_healthPoints = 0;
-    }
-    else {
-        player.m_healthPoints -= amount;
-    }
+// default get starting hp implementation
+int Job::getStartingHp() const
+{
+    return DEFAULT_HP;
 }
 
-void Warrior::encounterWinImplications(Player &player, const Monster &monster) const {
-    Job::encounterWinImplications(player, monster);
-    loseHealth(player, WARRIOR_HEALTH_LOSE);
+// default get starting coins implementation
+int Job::getStartingCoins() const
+{
+    return DEFAULT_COINS;
 }
 
-void Job::levelUp(Player &player) {
-    player.m_level++;
+// default get description implementation
+string Job::getDescription() const
+{
+    return this->jobDescription;
 }
 
-void Job::gainCoins(Player &player, int amount) {
-    player.m_coins += amount;
+//  Warrior Job
+Warrior::Warrior()
+{
+    this->magical = false;
+    this->ranged = false;
+    this->jobDescription = "Warrior";
+}
+// Warrior get starting hp override
+int Warrior::getStartingHp() const
+{
+    return WARRIOR_HP;
+}
+// Warrior get combat power override
+int Warrior::getCombatPower(const Player &player) const
+{
+    return player.getForce() * 2 + player.getLevel();
 }
 
-void Job::setMaxHealth(Player &player, int amount) {
-    player.m_maxHealth = amount;
-    player.m_healthPoints = amount;
+// Archer Job
+Archer::Archer()
+{
+    this->magical = false;
+    this->ranged = true;
+    this->jobDescription = "Archer";
 }
 
-void Job::gainForce(Player &player, const int amount) {
-    player.m_force += amount;
+// archer starting coins override
+int Archer::getStartingCoins() const
+{
+    return ARCHER_COINS;
 }
 
-void Job::loseForce(Player &player, const int amount) {
-    gainForce(player, -amount);
+// Mage Job
+Magician::Magician()
+{
+    this->magical = true;
+    this->ranged = true;
+    this->jobDescription = "Magician";
 }
 
-const string &Job::getJobTitle() const {
-    return m_jobTitle;
-}
-
-int Job::computeCombatPower(const Player &player) const {
-    return player.m_force + player.m_level;
-}
-
-int Job::solarEclipseImplications(Player &player) const {
-    loseForce(player, SOLAR_ECLIPSE_FORCE_LOSS);
-    return -SOLAR_ECLIPSE_FORCE_LOSS;
-}
-
-void Warrior::specialStartGameAttributes(Player &player) const {
-    setMaxHealth(player, WARRIOR_MAX_HEALTH);
-}
-
-int Warrior::computeCombatPower(const Player &player) const {
-    return player.getForce() * WARRIOR_MULTIPLIER + player.getLevel();
-}
-
-void Archer::specialStartGameAttributes(Player &player) const {
-    gainCoins(player, EXTRA_ARCHER_COINS);
-}
-
-int Magician::solarEclipseImplications(Player &player) const {
-    gainForce(player, MAGICIAN_FORCE_INCREASE);
-    return MAGICIAN_FORCE_INCREASE;
-}

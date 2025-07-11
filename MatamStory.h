@@ -2,23 +2,24 @@
 #pragma once
 
 #include <iostream>
-#include <algorithm>
 
-#include "Factory.h"
-#include "Players/Player.h"
-#include "Events/Event.h"
+#include "Player.h"
+#include "Event.h"
+
 
 class MatamStory{
 private:
-    Factory& m_factory;
-    std::vector<std::unique_ptr<Event>> m_events;
-    int m_numberOfEvents;
-    std::vector<std::unique_ptr<Player>> m_players;
-    std::vector<Player*> m_sortedPlayers;
-    int m_numberOfPlayers;
-    int m_numberOfFaintedPlayers;
     unsigned int m_turnIndex;
 
+    std::vector<unique_ptr<Event>> events;
+    std::vector<unique_ptr<Player>> players;
+
+    int currEventIndex;
+
+    //get vector of indexes of players sorted by score
+    std::vector<int> getSortedIndexes() const;
+
+    Event& getNextEvent();
     /**
      * Playes a single turn for a player
      *
@@ -40,7 +41,7 @@ private:
      *
      * @return - true if the game is over, false otherwise
     */
-    bool isGameOver();
+    bool isGameOver() const;
 
 public:
     /**

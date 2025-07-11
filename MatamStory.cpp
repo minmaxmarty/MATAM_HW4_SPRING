@@ -1,43 +1,59 @@
 
 #include "MatamStory.h"
-
 #include "Utilities.h"
+#include "Events/StreamAdapter.h"
 
-MatamStory::MatamStory(std::istream& eventsStream, std::istream& playersStream) : m_factory(Factory::factoryInstance()), m_numberOfFaintedPlayers(0) {
-
-    /*===== TODO: Open and read events file =====*/
-    m_events = m_factory.createEvents(eventsStream);
-    m_numberOfEvents = m_events.size();
-    /*==========================================*/
-
-    /*===== TODO: Open and Read players file =====*/
-    m_players = m_factory.createPlayers(playersStream);
-    m_numberOfPlayers = m_players.size();
-    for (auto& player : m_players) {
-        m_sortedPlayers.push_back(player.get());
+//get sorted indexes helper
+std::vector<int> MatamStory::getSortedIndexes() const {
+    int playerSize = this->players.size();
+    std::vector<int> indexVector(playerSize);
+    for (int i = 0; i < playerSize; i++) {
+        indexVector[i] = i;
     }
-    /*============================================*/
+    // sort indexes by player > operator
+    std::sort(indexVector.begin(), indexVector.end(), [&](int a, int b) {
+        return *players[a] > *players[b];
+    });
+    return indexVector;
+}
 
+
+MatamStory::MatamStory(std::istream& eventsStream, std::istream& playersStream) {
+    try {
+        const StreamAdapter streamAdapter;
+        this->events = streamAdapter.getEventsViaStream(eventsStream);
+        this->players = streamAdapter.getPlayersViaStream(playersStream);
+    } catch (std::exception& e) {
+        throw;
+    }
+    this->currEventIndex = 0;
     this->m_turnIndex = 1;
 }
 
+//get next event implementation
+Event& MatamStory::getNextEvent(){
+    int eventsNum = this->events.size();
+    if (this->currEventIndex == eventsNum) {
+        //reset index
+        this->currEventIndex = 0;
+    }
+    Event& event = *this->events[currEventIndex];
+    // increment currEventIndex
+    ++this->currEventIndex;
+    return event;
+}
+
+
 void MatamStory::playTurn(Player& player) {
-    unsigned int eventIndex = (m_turnIndex - 1) % m_numberOfEvents;
-    std::unique_ptr<Event>& curEvent = m_events.at(eventIndex);
 
-    printTurnDetails(m_turnIndex, player, *curEvent);
-
-    const string& outcome = curEvent->applyEvent(player);
-
-    printTurnOutcome(outcome);
-
-    /**
-     * Steps to implement (there may be more, depending on your design):
-     * 1. Get the next event from the events list
-     * 2. Print the turn details with "printTurnDetails"
-     * 3. Play the event
-     * 4. Print the turn outcome with "printTurnOutcome"
-    */
+    //get next event
+    Event& currEvent = this->getNextEvent();
+    //print turn details
+    printTurnDetails(m_turnIndex, player,currEvent);
+    //play event
+    string outcomeMessage = currEvent.apply(player);
+    //print results
+    printTurnOutcome(outcomeMessage);
 
     m_turnIndex++;
 }
@@ -46,61 +62,58 @@ void MatamStory::playRound() {
 
     printRoundStart();
 
-    /*===== TODO: Play a turn for each player =====*/
-    for (auto& player : m_players) {
-        if (!player->isPlayerFainted()) {
-            playTurn(*player);
+    for (const std::unique_ptr<Player> &playerPtr : this->players) {
+        // use reference
+        Player& player = *playerPtr;
+        if (player.getHealthPoints() > 0) {
+            this->playTurn(player);
         }
     }
-    /*=============================================*/
 
     printRoundEnd();
 
     printLeaderBoardMessage();
 
-    /*===== TODO: Print leaderboard entry for each player using "printLeaderBoardEntry" =====*/
-    std::sort(m_sortedPlayers.begin(), m_sortedPlayers.end(), [](auto const &player1, auto const &player2) {
-        return *player1 > *player2;
-    });
-    int entryNumber = 1;
-    for (const Player* player : m_sortedPlayers) {
-        printLeaderBoardEntry(entryNumber, *player);
-        entryNumber++;
-    }
+    std::vector<int> indexVector = this->getSortedIndexes();
 
-    /*=======================================================================================*/
+    int playerIdx = 1;
+    for (int idxIter: indexVector ) {
+        printLeaderBoardEntry(playerIdx, *this->players[idxIter]);
+        playerIdx++;
+    }
 
     printBarrier();
 }
 
-bool MatamStory::isGameOver() {
-    /*===== TODO: Implement the game over condition =====*/
-    int faintCounter = 0;
-    for (const auto& player : m_players) {
-        if (player->getLevel() == Player::MAX_LEVEL) {
+bool MatamStory::isGameOver() const {
+
+    // Check if any player has reached level 10
+    for (const std::unique_ptr<Player> &player : players) {
+        if (player->getLevel() == 10) {
             return true;
         }
-        if (player->isPlayerFainted()) {
-            faintCounter++;
+    }
+
+    // Check if all players have fainted
+    for (const std::unique_ptr<Player> &player : players) {
+        if (player->getHealthPoints() > 0) {
+            // Game continues if at least one player is still alive
+            return false;
         }
     }
-    m_numberOfFaintedPlayers = faintCounter;
-    if (faintCounter == m_numberOfPlayers) {
-        return true;
-    }
-    return false;
-    /*===================================================*/
+    // all players fainted
+    return true;
 }
 
 void MatamStory::play() {
     printStartMessage();
-    /*===== TODO: Print start message entry for each player using "printStartPlayerEntry" =====*/
-    int index = 1;
-    for (const auto& player : m_players) {
-        printStartPlayerEntry(index, *player);
-        index++;
+    int playerNum = 1;
+    for (const std::unique_ptr<Player> &playerPtr : players) {
+        // use reference
+        Player& player = *playerPtr;
+        printStartPlayerEntry(playerNum, player);
+        playerNum++;
     }
-    /*=========================================================================================*/
     printBarrier();
 
     while (!isGameOver()) {
@@ -108,11 +121,17 @@ void MatamStory::play() {
     }
 
     printGameOver();
-    /*===== TODO: Print either a "winner" message or "no winner" message =====*/
-    if (m_numberOfFaintedPlayers == m_numberOfPlayers) {
-        printNoWinners();
-    } else {
-        printWinner(*m_sortedPlayers.front());
+
+    for (const std::unique_ptr<Player>& playerPtr : players) {
+        // use reference
+        Player& player = *playerPtr;
+        if (player.getLevel() == 10) {
+            // the winner is the player atop the leaderboard
+            std::vector<int> indexVector = this->getSortedIndexes();
+            printWinner(*this->players[indexVector[0]]);
+            return;
+        }
     }
-    /*========================================================================*/
+
+    printNoWinners();
 }

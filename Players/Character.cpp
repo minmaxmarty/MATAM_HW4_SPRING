@@ -1,55 +1,47 @@
-//
-// Created by areg1 on 6/29/2025.
-//
-
 #include "Character.h"
-
-#include "Job.h"
+#include <string>
 #include "Player.h"
+#include <cmath>
 
+using std::string;
 
-void Character::gainHealth(Player &player, int amount) {
-    Job::gainHealth(player, amount);
+// Character
+
+// default get description implementation
+string Character::getDescription() const
+{
+    return this->characterDescription;
 }
 
-void Character::gainCoins(Player &player, int amount) {
-    Job::gainCoins(player, amount);
+// Responsible Character
+Responsible::Responsible()
+{
+    this->characterDescription = "Responsible";
 }
 
-const string &Character::getCharacterType() const {
-    return m_type;
+// Responsible potion buy amount
+int Responsible::potionBuyAmount(const Player &player, int price) const
+{
+    int missingHealth = player.getMaxHealth() - player.getPotentialHealth();
+    int hpLimitedAmount = ceil(missingHealth / 10);
+
+    int coinLimitedAmount = floor(player.getCoins() / price);
+
+    // min is first limitation
+    return std::min(hpLimitedAmount, coinLimitedAmount);
+}
+// Risktaking Character
+RiskTaking::RiskTaking()
+{
+    this->characterDescription = "RiskTaking";
 }
 
-int Responsible::howManyPotions(Player &player) {
-    int curCoins = player.getCoins();
-    int curHealth = player.getHealthPoints();
-    const int curMaxHealth = player.getMaxHealthPoints();
-    int amountToBuy = 0;
-    while (curMaxHealth - curHealth > 0 && curCoins >= POTION_PRICE) {
-        amountToBuy++;
-        curHealth += POTION_HEALTH_BOOST;
-        curCoins -= POTION_PRICE;
-
+// RiskTaking potion buy amount
+int RiskTaking::potionBuyAmount(const Player &player, int price) const
+{
+    if (player.getHealthPoints() < 50)
+    {
+        return 1;
     }
-
-    updatePlayerAfterEvent(player, amountToBuy);
-    return amountToBuy;
-}
-
-int RiskTaking::howManyPotions(Player &player) {
-    const int curHealth = player.getHealthPoints();
-    int amountToBuy = 0;
-    if (curHealth < BUYING_HEALTH_THRESHOLD) {
-        amountToBuy++;
-    }
-
-    updatePlayerAfterEvent(player, amountToBuy);
-    return amountToBuy;
-}
-
-void Character::updatePlayerAfterEvent(Player &player, const int amountToBuy) {
-    const int price = amountToBuy * POTION_PRICE;
-    const int healthBoost = amountToBuy * POTION_HEALTH_BOOST;
-    gainHealth(player, healthBoost);
-    gainCoins(player, price);
+    return 0;
 }

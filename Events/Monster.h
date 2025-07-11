@@ -1,82 +1,63 @@
-//
-// Created by areg1 on 6/30/2025.
-//
-
 #pragma once
 
+#include <vector>
 #include <memory>
 #include <string>
-#include <vector>
 
-using std::string;
-
-class Monster {
-
+class Monster
+{
 protected:
-    string m_name;
-    unsigned int m_combatPower = 0;
-    int m_loot = 0;
-    int m_damage = 0;
-    string m_description;
+    int force;
+    int loot;
+    int damage;
+    std::string name;
 
 public:
-    explicit Monster(const string& name) : m_name(name) {}
-    Monster(const string &name, unsigned int combatPower, int loot, int damage) : m_name(name),
-        m_combatPower(combatPower), m_loot(loot), m_damage(damage), m_description(m_name + Monster::createDescriptionString()) {}
+    Monster() : force(0), loot(0), damage(0) {}
     virtual ~Monster() = default;
-    virtual string createDescriptionString() const;
-    virtual void applyPostFightImplications() {};
-    const string& getName() const;
-    unsigned int getCombatPower() const;
-    int getLoot() const;
-    int getDamage() const;
-    string getDescription() const;
 
+    virtual int getCombatPower() const;
+    virtual int getLoot() const;
+    virtual int getDamage() const;
+    virtual std::string getName() const;
+    virtual void afterCombat() {}
 };
 
-class Snail : public Monster {
-    static const int SNAIL_COMBAT_POWER = 5;
-    static const unsigned int SNAIL_LOOT = 2;
-    static const int SNAIL_DAMAGE = 10;
-
+class Snail : public Monster
+{
 public:
-    static const string SNAIL;
-
-    Snail() : Monster(SNAIL, SNAIL_COMBAT_POWER, SNAIL_LOOT, SNAIL_DAMAGE) {}
+    Snail();
 };
 
-class Slime : public Monster {
-    static const int SLIME_COMBAT_POWER = 12;
-    static const unsigned int SLIME_LOOT = 5;
-    static const int SLIME_DAMAGE = 25;
-
+class Slime : public Monster
+{
 public:
-    static const string SLIME;
-
-    Slime() : Monster(SLIME, SLIME_COMBAT_POWER, SLIME_LOOT, SLIME_DAMAGE) {}
+    Slime();
 };
 
-class Balrog : public Monster {
-    static const int BALROG_COMBAT_POWER = 15;
-    static const unsigned int BALROG_LOOT = 100;
-    static const int BALROG_DAMAGE = 9001;
-    static const int BALROG_COMBAT_POWER_BOOST = 2;
-
+class Balrog : public Monster
+{
 public:
-    static const string BALROG;
-
-    Balrog() : Monster(BALROG, BALROG_COMBAT_POWER, BALROG_LOOT, BALROG_DAMAGE) {}
-
-    void applyPostFightImplications() override;
-
+    Balrog();
+    void afterCombat() override;
 };
 
-class Pack : public Monster {
-    std::vector<std::unique_ptr<Monster>> m_packMonsters;
-    int m_packSize;
+class Pack final : public Monster
+{
+private:
+    std::vector<std::unique_ptr<Monster>> monsters;
+    // get recursive length of pack
+    int getLength() const;
 
 public:
-    explicit Pack(std::vector<std::unique_ptr<Monster>>& monsters);
-    string createDescriptionString() const override;
-    int getPackSize() const;
+    Pack();
+    ~Pack() override = default;
+
+    int getCombatPower() const override;
+    int getLoot() const override;
+    int getDamage() const override;
+    void afterCombat() override;
+    std::string getName() const override;
+
+    void addMonster(std::unique_ptr<Monster> monster);
 };
