@@ -22,7 +22,7 @@ public:
     explicit Event(const string& description) : m_description(description) {}
     virtual ~Event() = default;
     virtual string getDescription() const;
-    virtual string applyEvent(Player& player) const = 0;
+    virtual string applyEvent(Player& player) = 0;
 
 };
 
@@ -38,7 +38,7 @@ public:
     static const string SOLAR_ECLIPSE;
 
     SolarEclipse() : SpecialEvent(SOLAR_ECLIPSE) {}
-    string applyEvent(Player& player) const override;
+    string applyEvent(Player& player) override;
 
 };
 
@@ -48,18 +48,16 @@ public:
     static const string POTIONS_MERCHANT;
 
     PotionsMerchant() : SpecialEvent(POTIONS_MERCHANT) {}
-    string applyEvent(Player& player) const override;
+    string applyEvent(Player& player) override;
 
 };
 
 class Encounter : public Event {
     std::unique_ptr<Monster> m_monster;
 
-    static string createDescriptionString(const std::unique_ptr<Monster> &monster) ;
-
 public:
     explicit Encounter(std::unique_ptr<Monster> monster);
-    string applyEvent(Player& player) const override;
+    string applyEvent(Player& player) override;
 };
 
 

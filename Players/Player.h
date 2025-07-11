@@ -38,7 +38,7 @@ public:
 
     Character& getCharacter() const;
 
-    bool operator<(const Player& leftPlayer) const;
+    bool operator>(const Player& leftPlayer) const;
 
     /**
      * Gets the description of the player
@@ -80,7 +80,7 @@ public:
      *
      * @return - coins of the player
     */
-    int getCoins() const;
+    unsigned int getCoins() const;
 
     int getMaxHealthPoints() const;
 

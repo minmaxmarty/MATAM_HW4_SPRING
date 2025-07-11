@@ -22,9 +22,9 @@ bool Factory::hasNonLetter(const string &name) {
 }
 
 bool Factory::checkPlayerInput(const string &name, const string &job, const string &character) const {
-    if ((name.length() > MAX_NAME_LENGTH || name.length() < MIN_NAME_LENGTH) && hasNonLetter(name) ||
-        jobFactory.find(job) != jobFactory.end() ||
-        characterFactory.find(character) != characterFactory.end()) {
+    if (name.length() > MAX_NAME_LENGTH || name.length() < MIN_NAME_LENGTH
+        || hasNonLetter(name) || jobFactory.find(job) == jobFactory.end() ||
+        characterFactory.find(character) == characterFactory.end()) {
         return false;
     }
     return true;
@@ -34,7 +34,7 @@ std::vector<std::unique_ptr<Player>> Factory::createPlayers(std::istream &player
     string name, job, character;
     std::vector<std::unique_ptr<Player>> players;
     while (playersStream >> name >> job >> character) {
-        if (checkPlayerInput(name, job, character)) {
+        if (!checkPlayerInput(name, job, character)) {
             throw InvalidPlayerInput();
         }
         players.push_back(std::make_unique<Player>(
@@ -67,11 +67,15 @@ std::vector<std::unique_ptr<Event>> Factory::createEvents(std::istream &eventStr
             throw InvalidEventInput();
         }
     }
+    if (events.size() < MIN_EVENT_NUMBER) {
+        throw InvalidEventInput();
+    }
+    return events;
 }
 
 std::unique_ptr<Pack> Factory::packFactory(std::istream &packInput) const {
     int packSize;
-    if (packInput >> packSize && packSize > MIN_PACK_SIZE) {
+    if (packInput >> packSize && packSize >= MIN_PACK_SIZE) {
         int i;
         std::vector<std::unique_ptr<Monster>> packMonsters;
         for (i = 0; i < packSize; ++i) {

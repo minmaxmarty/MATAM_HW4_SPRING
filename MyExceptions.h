@@ -7,8 +7,8 @@
 
 using std::string;
 
-static const string DEFAULT_PLAYER_ERROR_MSG = "Invalid Player Input";
-static const string DEFAULT_EVENT_ERROR_MSG = "Invalid Event Input";
+static const string DEFAULT_PLAYER_ERROR_MSG = "Invalid Players File";
+static const string DEFAULT_EVENT_ERROR_MSG = "Invalid Events File";
 static const string DEFAULT_MONSTER_ERROR_MSG = "Invalid Monster Input";
 
 class InvalidPlayerInput : public std::runtime_error {

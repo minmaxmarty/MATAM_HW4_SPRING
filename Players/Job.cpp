@@ -46,11 +46,12 @@ void Job::levelUp(Player &player) {
 }
 
 void Job::gainCoins(Player &player, int amount) {
-    player.m_coins = amount;
+    player.m_coins += amount;
 }
 
 void Job::setMaxHealth(Player &player, int amount) {
     player.m_maxHealth = amount;
+    player.m_healthPoints = amount;
 }
 
 void Job::gainForce(Player &player, const int amount) {

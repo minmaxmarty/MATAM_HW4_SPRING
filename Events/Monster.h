@@ -17,17 +17,20 @@ protected:
     unsigned int m_combatPower = 0;
     int m_loot = 0;
     int m_damage = 0;
+    string m_description;
 
 public:
     explicit Monster(const string& name) : m_name(name) {}
     Monster(const string &name, unsigned int combatPower, int loot, int damage) : m_name(name),
-        m_combatPower(combatPower), m_loot(loot), m_damage(damage) {}
+        m_combatPower(combatPower), m_loot(loot), m_damage(damage), m_description(m_name + Monster::createDescriptionString()) {}
     virtual ~Monster() = default;
-    virtual void applyPostFightImplications() = 0;
+    virtual string createDescriptionString() const;
+    virtual void applyPostFightImplications() {};
     const string& getName() const;
     unsigned int getCombatPower() const;
     int getLoot() const;
     int getDamage() const;
+    string getDescription() const;
 
 };
 
@@ -74,6 +77,6 @@ class Pack : public Monster {
 
 public:
     explicit Pack(std::vector<std::unique_ptr<Monster>>& monsters);
-
+    string createDescriptionString() const override;
     int getPackSize() const;
 };

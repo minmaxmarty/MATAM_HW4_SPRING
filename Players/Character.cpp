@@ -25,12 +25,11 @@ int Responsible::howManyPotions(Player &player) {
     int curHealth = player.getHealthPoints();
     const int curMaxHealth = player.getMaxHealthPoints();
     int amountToBuy = 0;
-    while (curMaxHealth - curHealth > 0) {
-        if (curCoins >= POTION_PRICE) {
-            amountToBuy++;
-            curHealth += POTION_HEALTH_BOOST;
-            curCoins -= POTION_PRICE;
-        }
+    while (curMaxHealth - curHealth > 0 && curCoins >= POTION_PRICE) {
+        amountToBuy++;
+        curHealth += POTION_HEALTH_BOOST;
+        curCoins -= POTION_PRICE;
+
     }
 
     updatePlayerAfterEvent(player, amountToBuy);

@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <String>
+#include <string>
 
 class Player;
 class Character;
@@ -43,7 +43,7 @@ public:
     virtual ~Job() = default;
 
     const string &getJobTitle() const;
-    virtual void specialStartGameAttributes(Player& player) const = 0;
+    virtual void specialStartGameAttributes(Player& player) const {} // stub override, class player sets because default
     virtual int computeCombatPower(const Player& player) const;
     virtual int solarEclipseImplications(Player &player) const;
     virtual void encounterWinImplications(Player& player, const Monster &monster) const;
@@ -75,6 +75,7 @@ public:
 
 class Magician : public Job {
     static const int MAGICIAN_FORCE_INCREASE = 1;
+public:
     // ----- Constructor ----- //
     Magician() : Job("Magician", JobType::Magical, CombatType::Ranged) {}
     // ----- Methods ----- //

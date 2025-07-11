@@ -13,9 +13,10 @@ private:
     Factory& m_factory;
     std::vector<std::unique_ptr<Event>> m_events;
     int m_numberOfEvents;
-    int m_curEvent;
     std::vector<std::unique_ptr<Player>> m_players;
+    std::vector<Player*> m_sortedPlayers;
     int m_numberOfPlayers;
+    int m_numberOfFaintedPlayers;
     unsigned int m_turnIndex;
 
     /**
@@ -39,7 +40,7 @@ private:
      *
      * @return - true if the game is over, false otherwise
     */
-    bool isGameOver() const;
+    bool isGameOver();
 
 public:
     /**

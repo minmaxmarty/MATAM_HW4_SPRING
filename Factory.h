@@ -10,10 +10,10 @@
 #include <functional>
 #include <iostream>
 
-#include "Character.h"
-#include "Event.h"
-#include "Job.h"
-#include "Monster.h"
+#include "Players/Character.h"
+#include "Events/Event.h"
+#include "Players/Job.h"
+#include "Events/Monster.h"
 
 class Player;
 class Event;
@@ -41,7 +41,7 @@ class Factory {
 
     const std::map<string, std::function<std::unique_ptr<Monster>()>> monsterFactory = {
         {"Snail", []() {return std::make_unique<Snail>(); }},
-        {"Slime", []() {return std::make_unique<Snail>(); }},
+        {"Slime", []() {return std::make_unique<Slime>(); }},
         {"Balrog", []() {return std::make_unique<Balrog>(); }},
     };
 

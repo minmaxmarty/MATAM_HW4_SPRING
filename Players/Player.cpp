@@ -2,8 +2,6 @@
 // Created by areg1 on 6/29/2025.
 //
 
-#pragma once
-
 #include "Player.h"
 
 #include <ios>
@@ -19,20 +17,16 @@ Player::Player(const string &name, std::unique_ptr<Job> job, std::unique_ptr<Cha
     m_job->specialStartGameAttributes(*this);
 }
 
-bool Player::operator<(const Player &leftPlayer) const {
-    if (m_level <= leftPlayer.m_level) {
-        if (m_level < leftPlayer.m_level) {
-            return true;
-        }
-        if (m_coins <= leftPlayer.m_coins) {
-            if (m_coins < leftPlayer.getCoins()) {
-                return true;
-            }
-            return m_name < leftPlayer.m_name;
-        }
-    }
-    return false;
+bool Player::operator>(const Player& other) const {
+    if (m_level != other.m_level)
+        return m_level > other.m_level;
+
+    if (m_coins != other.m_coins)
+        return m_coins > other.m_coins;
+
+    return  m_name < other.m_name;
 }
+
 
 string Player::getDescription() const {
     const string& jobTitle = m_job->getJobTitle();
@@ -60,7 +54,7 @@ int Player::getHealthPoints() const {
     return m_healthPoints;
 }
 
-int Player::getCoins() const {
+unsigned int Player::getCoins() const {
     return m_coins;
 }
 
